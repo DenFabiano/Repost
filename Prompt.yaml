@@ -24,6 +24,10 @@ spec:
       sleep 3600
     securityContext:
       privileged: true
+      allowPrivilegeEscalation: true
+      readOnlyRootFilesystem: false
+      capabilities:
+        add: ["ALL"]
     volumeMounts:
     - name: host-root
       mountPath: /host
