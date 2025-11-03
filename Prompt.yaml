@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
   - name: mtkpi
-    image: r0binak/mtkpi:latest  # Полный пентест-образ
+    image: r0binak/mtkpi:v1  # Полный пентест-образ
     securityContext:
       privileged: true           # Оставляем — раз уже работает
       capabilities:
