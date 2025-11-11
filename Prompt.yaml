@@ -10,13 +10,6 @@ spec:
     securityContext:
       privileged: true
       runAsUser: 0
-      capabilities:
-        add:
-        - SYS_ADMIN
-        - NET_ADMIN
-        - SYS_PTRACE
-        - SYS_MODULE
-        - ALL
     command: ["/bin/sh", "-c"]
     args:
     - |
