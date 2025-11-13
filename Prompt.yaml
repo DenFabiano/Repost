@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
   - name: shell-container
-    image: ubuntu
+    image: alpine
     securityContext:
       privileged: true
       runAsUser: 0
